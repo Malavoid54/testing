@@ -1,0 +1,299 @@
+#playlist-content {
+  font-family: 'Poppin', sans-serif;
+}
+
+/*  Playlist Header Title */
+.playlist-name {
+  font-size: 32px;
+  font-weight: 600;
+  color: var(--primary);
+  text-transform: capitalize;
+  position: relative;
+}
+
+.playlist-name::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 50px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), #00c9ff);
+  border-radius: 5px;
+}
+
+/*  Tag Styling */
+.tag-row {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tag {
+  background-color: var(--accent);
+  color: black;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  letter-spacing: 0.3px;
+  display: inline-block;
+}
+
+/*  Column Headers (Playlist Header )  */
+.playlist-header {
+  display: grid;
+  grid-template-areas: 'number name date album duration';
+  grid-template-columns: 5% 40% 20% 25% 10%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-weight: 600;
+  color: var(--accent);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 6px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: var(--background-dark);
+}
+
+/*  Column Grid Areas  */
+.playlist-header .song-number { grid-area: number; }
+.playlist-header .song-name { grid-area: name; }
+.playlist-header .album-name { grid-area: album; }
+.playlist-header .date-added { grid-area: date; }
+.playlist-header .song-duration { grid-area: duration; }
+
+.songs {
+  overflow-y: scroll;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) transparent;
+}
+
+.songs:empty::before {
+  content: "Add songs to your playlist 🎶";
+  color: #777;
+  font-size: 18px;
+  text-align: center;
+  display: block;
+  margin-top: 50px;
+  background-image: url('/images/album-placeholder.svg');
+  background-repeat: no-repeat;
+  background-position: center 20px;
+  background-size: 80px;
+  opacity: 0.2;
+}
+
+/*  Song Row  */
+.songs>div {
+  display: grid;
+  grid-template-areas: 'snum sinfo sdate salbum sduration';
+  grid-template-columns: 5% 40% 20% 25% 10%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  transition: background 0.2s ease, transform 0.2s ease;
+  padding: 10px 0;
+  animation: fadeIn 0.4s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.songs>div:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(3px);
+  cursor: pointer;
+  transform: scale(1.01);
+}
+
+.songs>div .song-number { grid-area: snum; }
+.songs>div .song-info { grid-area: sinfo; display: flex; align-items: center; gap: 10px; }
+.songs>div .song-album { grid-area: salbum; }
+.songs>div .song-date { grid-area: sdate; }
+.songs>div .song-duration { grid-area: sduration; }
+
+.songs img {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.4);
+}
+
+.song-info-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.song-info-text .title {
+  font-weight: bold;
+  color: white;
+}
+
+.song-info-text .artist {
+  font-size: 0.9em;
+  color: #cccccc;
+}
+
+/*  Options Menu */
+.playlist-options {
+  background: none;
+  border: none;
+  color: var(--text-white);
+  font-size: 18px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.playlist-menu {
+  position: absolute;
+  background-color: var(--panel-dark);
+  border: 1px solid var(--primary);
+  border-radius: 6px;
+  padding: 8px 0;
+  right: 30px;
+  top: 80px;
+  z-index: 999;
+  min-width: 100px;
+}
+
+.playlist-menu.hidden {
+  display: none;
+}
+
+.menu-option {
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.menu-option:hover {
+  background-color: rgba(0, 224, 199, 0.1);
+}
+
+/* Track Dropdown (Card Menu) */
+.card {
+  position: relative;
+  overflow: visible;
+  z-index: 1;
+}
+
+.track-dropdown-container {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+}
+
+.track-dropdown-button {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: var(--text-white);
+  cursor: pointer;
+}
+
+.track-dropdown-menu {
+  position: absolute;
+  top: 30px;
+  right: 0;
+  background-color: var(--panel-dark);
+  border: 1px solid var(--primary);
+  border-radius: 6px;
+  padding: 8px 0;
+  display: none;
+  z-index: 999;
+  width: 180px;
+}
+
+.track-dropdown-menu.active {
+  display: block;
+}
+
+.track-dropdown-menu .dropdown-option {
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.track-dropdown-menu .dropdown-option:hover {
+  background-color: rgba(0, 224, 199, 0.1);
+}
+
+.track-dropdown-menu .playlist-checkbox {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+}
+
+.track-dropdown-menu input[type="checkbox"] {
+  transform: scale(1.1);
+}
+
+/*  Modal Styling  */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.modal-content {
+  background-color: var(--panel-dark);
+  margin: 10% auto;
+  padding: 20px;
+  border-radius: 10px;
+  width: 300px;
+  color: var(--text-white);
+  font-family: 'Poppins', sans-serif;
+  border: 1px solid var(--primary);
+  box-shadow: 0 0 10px rgba(0, 188, 212, 0.3);
+}
+
+.modal-content .close {
+  float: right;
+  font-size: 20px;
+  color: #aaa;
+  cursor: pointer;
+}
+
+.modal-content .close:hover {
+  color: var(--text-white);
+}
+
+.modal-content input[type="text"] {
+  width: 100%;
+  padding: 6px;
+  margin: 5px 0 10px;
+  background-color: #1f1f1f;
+  border: 1px solid #333;
+  color: var(--text-white);
+  border-radius: 4px;
+}
+
+.modal-content label {
+  display: block;
+  margin: 8px 0;
+}
+
+.modal-content button {
+  background-color: var(--primary);
+  color: #000;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.modal-content button:hover {
+  background-color: #03acc1;
+}

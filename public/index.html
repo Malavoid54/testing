@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SoundStack</title>
+  <link rel="stylesheet" href="/stylesheets/soundstack_style_guide.css" />
+  <link rel="stylesheet" href="/stylesheets/playlist_layout.css" />
+  <link rel="stylesheet" href="/stylesheets/soundstack_layout.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-nav">
+      <div class="sidebar-item">
+        <i class="fas fa-house"></i>
+        <span>Home</span>
+      </div>
+      <div class="sidebar-item">
+        <i class="fas fa-compass"></i>
+        <span>Explore</span>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="sidebar-nav">
+      <div style=" align-items: center; gap: 10px; padding: 10px; margin-bottom: 10px; display: flex;">
+        <i class="fas fa-book"></i>
+        <span>Your Stack</span>
+      </div>
+      <div class="playlist-filter">
+        <i class="fa-solid fa-plus" onclick="createPlaylist()"></i>
+        <i id="sortAZ" class="fa-solid fa-arrow-up-a-z"></i>
+        <input type="text" class="search-bar-pl" name="playlist-search" placeholder="Search playlists...">
+      </div>
+      <hr>
+    </div>
+    <div class="sidebar-playlist">
+      <div class="sidebar-item liked">
+        <i class="fas fa-heart"></i>
+        <span>Liked Songs</span>
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Cookies</a>
+      <a href="#">Accessibility</a>
+      <a href="#">Language: EN</a>
+    </div>
+  </div>
+
+  <!-- Topbar -->
+<div class="topbar">
+  <input class="search-bar" type="text" id="searchInput" placeholder="Search songs, artists..."
+    oninput="searchDeezer()" />
+  <select id="searchFilter" onchange="searchDeezer()" class="search-filter">
+    <option value="all">All</option>
+    <option value="track">Songs</option>
+    <option value="artist">Artists</option>
+    <option value="album">Albums</option>
+  </select>
+
+  <div class="button-group">
+    <button type="button" class="btn-secondary" style="display: none;">
+      <i class="fas fa-gear"></i>
+    </button>
+    <button type="button" class="btn-primary login" onclick="redirect('/signup')">Sign Up</button>
+    <button type="button" class="btn-primary login" onclick="redirect('/login')">Log In</button>
+    <button type="button" class="btn-primary" id="settingsBtn" onclick="toggleSettings()" style="display: none;">
+      <i class="fa-solid fa-gear"></i>
+    </button>
+    <button type="button" class="btn-primary" id="logoutBtn" onclick="logoutUser()" style="display: none;">Logout</button>
+  </div>
+</div>
+
+
+  <!-- Main Content -->
+  <div class="main">
+    <div id="search-results"></div>
+
+    <div id="playlist-content" style="display: none;">
+      <div class="playlist-name-container" style="display: flex; align-items: center; justify-content: space-between;">
+        <h2 class="playlist-name">Name</h2>
+        <div style="position: relative;">
+          <button type="button" class="playlist-options"><i class="fas fa-ellipsis-v"></i></button>
+          <div class="playlist-menu hidden">
+            <div class="menu-option" id="rename-playlist">Rename</div>
+            <div class="menu-option" id="delete-playlist">Delete</div>
+            <div class="menu-option" id="toggle-pin">Pin</div>
+            <div class="menu-option" id="edit-tags">Edit Tags</div>
+          </div>
+        </div>
+      </div>
+      <div class="playlist-info">
+        <div class="playlist-numsong"><span>Songs: </span><span class="playlist-data"></span></div>
+        <div class="playlist-duration"><span>Duration: </span><span class="playlist-data"></span></div>
+      </div>
+      <div class="playlist-header">
+        <div class="song-number">#</div>
+        <div class="song-name">Title</div>
+        <div class="album-name">Album</div>
+        <div class="date-added">Added</div>
+        <div class="song-duration">Duration</div>
+      </div>
+      <div class="songs"></div>
+    </div>
+
+    <div id="settings-content" style="display: none; ">
+      <div class="account-info">
+        <h2>Account</h2>
+        <span class="account-name"></span>
+        <span class="account-date"></span>
+        <button type="button" onclick="deleteUser()">Delete Account</button>
+      </div>
+      <hr>
+      <div class="theme">
+        <h2>Theme</h2>
+        <button type="button">Classic</button>
+        <button type="button">Dark</button>
+        <button type="button">Light</button>
+      </div>
+      <hr>
+      <div class="accessibility">
+        <h2>Accessibility</h2>
+        <h4>Color</h4>
+        <div>
+          <button type="button">High contrast</button>
+        </div>
+        <h4>Text</h4>
+          <div>
+            <input class="text-size" type="range" min="0" max="4" value="2">
+            <span></span>
+          </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Now Playing Panel -->
+  <div class="now-playing">
+    <div id="current-eq">
+      <p>Equalizer</p>
+      <div class="eq-lines">
+        <hr>
+        <hr>
+        <hr>
+      </div>
+      <div class="eq-numbers">
+        <p class="plus">+12 db</p>
+        <p class="minus">-12 db</p>
+      </div>
+      <div class="eq-sliders">
+        <input type="range" id="subbbass" value="50">
+        <input type="range" id="bass" value="50">
+        <input type="range" id="lowmids" value="50">
+        <input type="range" id="mids" value="50">
+        <input type="range" id="uppermids" value="50">
+        <input type="range" id="presence" value="50">
+        <input type="range" id="treble" value="50">
+      </div>
+    </div>
+    <div class="card">
+      <img src="/images/album-placeholder.png" alt="Album Cover" width="100%" />
+      <h3>Song Title</h3>
+      <p class="caption">Artist Name</p>
+    </div>
+    <button type="button" class="btn-secondary btn-full">Queue</button>
+  </div>
+
+  <!-- Footer -->
+<div class="footer">
+  <!-- Left -->
+  <div class="footer-left">
+    <img id="nowPlayingImg" class="album-thumb" src="/images/album-placeholder.png" alt="Album Cover" />
+    <div class="track-info">
+      <p id="nowPlayingTitle" class="song-title">Song Name</p>
+      <p id="nowPlayingArtist" class="caption">Artist Name</p>
+    </div>
+  </div>
+
+  <!-- Center -->
+  <div class="footer-center">
+    <div class="controls">
+      <button type="button" class="control-btn" id="shuffleBtn">
+        <i class="fas fa-shuffle"></i>
+      </button>
+      <button type="button" class="control-btn" id="prevBtn">
+        <i class="fas fa-backward"></i>
+      </button>
+      <button type="button" class="control-btn" id="playPauseBtn">
+        <i class="fas fa-play"></i>
+      </button>
+      <button type="button" class="control-btn" id="nextBtn">
+        <i class="fas fa-forward"></i>
+      </button>
+      <button type="button" class="control-btn" id="repeatBtn">
+        <i class="fas fa-repeat"></i>
+      </button>
+
+      <audio id="mainAudioPlayer" class="footer-audio" style="display: none;">
+        <source id="mainAudioSource" src="" type="audio/mpeg" />
+      </audio>
+    </div>
+
+    <input id="progressBar" class="progress-bar" type="range" min="0" max="100" value="0" />
+  </div>
+
+  <!-- Right -->
+  <div class="footer-right">
+    <button type="button" class="btn-circle">
+      <i class="fa-solid fa-volume-high"></i>
+    </button>
+    <input class="volume-slider" type="range" min="0" max="100" value="100" />
+  </div>
+</div>
+
+  <!-- Script -->
+  <script src="/javascripts/content.js" defer></script>
+  <script src="/javascripts/search.js" defer></script>
+  <script src="/javascripts/redirection.js" defer></script>
+  <script src="/javascripts/footer.js" defer></script>
+
+
+  <div id="playlistModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h3 style="color: var(--primary); margin-bottom: 10px;">Create Playlist</h3>
+      <label for="playlistName">Name:</label>
+      <input type="text" id="playlistName" placeholder="Playlist Name">
+
+      <label for="playlistTags">Tags (comma-separated):</label>
+      <input type="text" id="playlistTags" placeholder="e.g. chill, workout, throwback">
+
+      <label>
+        <input type="checkbox" id="playlistPinned"> Pin this playlist
+      </label>
+
+      <button type="button" onclick="submitPlaylist()">Create</button>
+    </div>
+  </div>
+
+</body>
+
+</html>

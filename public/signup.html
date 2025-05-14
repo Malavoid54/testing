@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sign up to SoundStack</title>
+  <link rel="stylesheet" href="stylesheets/soundstack_style_guide.css" />
+  <link rel="stylesheet" href="stylesheets/soundstack_layout.css" />
+  <link rel="stylesheet" href="stylesheets/soundstack_login.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+  <div class="login-container" id="app">
+    <div class="logo-area">
+      <img src="/images/logo1.png" alt="SoundStack Logo" class="login-logo animate-logo" />
+    </div>
+
+    <h1 class="login-heading">
+      Sign up to <span class="brand-name">SoundStack</span>
+    </h1>
+
+    <form id="signup-form">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="Username" placeholder="Create your username" v-model="username" @input="usernameValidation('signup'); checkInputValidity()" required/>
+        <p class="vue-error-mes">{{ user_error_mes }}</p>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div>
+          <div class="icon"><i class="fa-solid fa-eye"></i></div>
+          <input type="password" id="password" name="Password" placeholder="Create your password" v-model="password" @input="passwordValidation(); checkInputValidity()" required/>
+        </div>
+        <p class="vue-error-mes">{{ pw_error_mes }}</p>
+      </div>
+
+      <div class="button-group">
+        <input type="submit" class="btn-primary" value="Sign Up" :disabled="!allowContinue"/>
+        <button type="button" class="btn-secondary" onclick="redirect('/')">Continue as Guest</button>
+      </div>
+    </form>
+
+    <p class="signup-link">
+      Already have an account?
+      <a href="/login" style="color: var(--primary)">Log in</a>
+    </p>
+  </div>
+
+  <script src="/javascripts/redirection.js"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="/javascripts/vue.js"></script>
+  <script>
+    document.getElementById("signup-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const Username = document.getElementById("username").value.trim();
+      const Password = document.getElementById("password").value.trim();
+
+      if (!Username || !Password) {
+        alert("Username and Password are required.");
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/users/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ Username, Password })
+        });
+
+        if (response.ok) {
+          const userData = await response.json();
+          localStorage.setItem('loggedInUser', JSON.stringify(userData));
+          alert("Signup successful! 🎉");
+          window.location = '/';
+        } else if (response.status === 409) {
+          alert("Username already exists. Please choose a different one.");
+        } else {
+          alert("Signup failed. Try again.");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("An error occurred. Please try again later.");
+      }
+    });
+
+    // Password toggle stuff
+    function togglePassword() {
+      var input = document.querySelector("input[name='Password']");
+      var eye = document.querySelector(".icon > i");
+      if (input.type === 'password') {
+        input.type = 'text';
+        eye.classList.remove("fa-eye");
+        eye.classList.add("fa-eye-slash");
+      } else {
+        input.type = 'password';
+        eye.classList.add("fa-eye");
+        eye.classList.remove("fa-eye-slash");
+      }
+    }
+    document.querySelector(".icon > i").addEventListener("click", togglePassword);
+  </script>
+
+</body>
+</html>

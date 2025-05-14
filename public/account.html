@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Account | SoundStack</title>
+  <link rel="stylesheet" href="stylesheets/soundstack_style_guide.css" />
+  <link rel="stylesheet" href="stylesheets/soundstack_layout.css" />
+</head>
+<body>
+  <div class="account-container">
+    <h2>Your Account</h2>
+    <div id="account-info"></div>
+    <button type="button" class="btn-secondary" id="logout-btn">Log Out</button>
+    <button type="button" class="btn-secondary" onclick="window.location='/'">Back to Home</button>
+  </div>
+  <script>
+    // Show user info
+    const user = JSON.parse(localStorage.getItem('loggedInUser') || 'null');
+    if (user) {
+      document.getElementById('account-info').innerHTML = `
+        <p><strong>Username:</strong> ${user.Username}</p>
+        <p><strong>User ID:</strong> ${user.UserID}</p>
+      `;
+    } else {
+      document.getElementById('account-info').innerHTML = "Not logged in.";
+      document.getElementById('logout-btn').style.display = "none";
+    }
+
+    // Log out button
+    document.getElementById('logout-btn').onclick = function() {
+      localStorage.removeItem('loggedInUser');
+      window.location = "/"; // Redirect to homepage
+    };
+  </script>
+</body>
+</html>

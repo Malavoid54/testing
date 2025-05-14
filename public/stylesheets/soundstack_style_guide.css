@@ -1,0 +1,126 @@
+:root {
+    --primary: #00E0C7;
+    --accent: #00BCD4;
+    --background-dark: #0D1B2A;
+    --panel-dark: #1B2A3D;
+    --playlist-card: #12283C;
+    --text-white: #FAFAFA;
+    --text-muted: #6C757D;
+    --danger: #FF5252;
+    --hover-accent: #00ACC1;
+  }
+
+  body {
+    background-color: var(--background-dark);
+    color: var(--text-white);
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Buttons */
+  .btn-primary {
+    background-color: var(--primary);
+    color: var(--background-dark);
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .btn-primary:hover {
+    background-color: var(--accent);
+  }
+
+  .btn-secondary {
+    background-color: transparent;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+    border-radius: 8px;
+    padding: 10px 20px;
+    cursor: pointer;
+  }
+
+  .btn-secondary:hover {
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  .btn-danger {
+    background-color: var(--danger);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+  }
+
+  .account {
+    visibility: hidden;
+  }
+
+  /* Navbar */
+  .navbar {
+    background-color: var(--background-dark);
+    color: var(--text-white);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+
+  .navbar a {
+    color: var(--text-white);
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+  }
+
+  .navbar a.active, .navbar a:hover {
+    color: var(--primary);
+    border-bottom: 2px solid var(--accent);
+  }
+
+  /* Cards */
+  .card {
+    background-color: var(--playlist-card);
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    text-align: center;
+  }
+
+  /* Typography */
+  h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-white);
+  }
+
+  h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--primary);
+  }
+
+  p {
+    font-size: 16px;
+    color: var(--text-white);
+  }
+
+  small, .caption {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+    color: var(--hover-accent);
+  }
