@@ -4,22 +4,53 @@ const db = require('../database');
 const database = require('../database');
 
 // Create playlist
-router.post('/', async (req, res) => {
-  const { userId, name, tags, pinned } = req.body;
+router.post('/addTrack', async (req, res) => {
+  const { playlistId, title, album, artist, duration, albumCover, previewUrl, deezerId } = req.body;
 
-  if (!userId || !name) {
-    return res.status(400).json({ message: "User ID and Name are required" });
-  }
+  console.log("Adding track:", { playlistId, title, album, artist, duration });
 
   try {
-    await db.query(
-      'INSERT INTO Playlists (UserID, Name, Tags, Pinned) VALUES (?, ?, ?, ?)',
-      [userId, name, JSON.stringify(tags || []), pinned ? 1 : 0]
+    // Check if track already exists
+    const [existing] = await db.query(
+      'SELECT * FROM Tracks WHERE Title = ? AND Album = ?', 
+      [title, album]
     );
-    res.status(201).json({ message: "Playlist created successfully" });
+
+    let trackId;
+    if (existing.length > 0) {
+      trackId = existing[0].TrackID;
+    } else {
+      // new track 
+      const [result] = await db.query(
+        `INSERT INTO Tracks 
+        (DeezerID, Title, Artist, Album, Duration, AlbumCover, PreviewURL) 
+        VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [
+          deezerId || null,
+          title || 'Unknown Track',
+          artist || 'Unknown Artist',
+          album || 'Unknown Album',
+          duration || 30,
+          albumCover || '/images/album-placeholder.png',
+          previewUrl || null
+        ]
+      );
+      trackId = result.insertId;
+    }
+
+    //add to playlist
+    await db.query(
+      'INSERT INTO PlaylistTracks (PlaylistID, TrackID) VALUES (?, ?)',
+      [playlistId, trackId]
+    );
+
+    res.json({ success: true });
   } catch (err) {
-    console.error("Playlist creation error:", err);
-    res.status(500).json({ error: err.message });
+    console.error("Error adding track:", err);
+    res.status(500).json({ 
+      error: err.message,
+      details: "Failed to add track to playlist" 
+    });
   }
 });
 

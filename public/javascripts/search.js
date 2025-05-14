@@ -49,19 +49,22 @@ async function searchDeezer() {
         card.className = 'card';
         card.innerHTML = `
           <div class="track-img-container">
-            <img class="track-img" src="${track.album.cover_medium}" alt="${track.title}">
-            <i class="fas fa-play play-hover-icon"></i>
+            <img class="track-img" src="${track.album?.cover_medium || '/images/album-placeholder.png'}"
+              alt="${track.title}"
+              onerror="this.src='/images/album-placeholder.png'">
+            ${track.preview ? '<i class="fas fa-play play-hover-icon"></i>' : ''}
           </div>
-          <h4>${track.title}</h4>
-          <small>${track.artist.name}</small><br/>
+          <h4>${track.title || 'Unknown Track'}</h4>
+          <small>${track.artist?.name || 'Unknown Artist'}</small><br/>
           <div class="track-dropdown-container">
-          <button class="track-dropdown-button"
+            button class="track-dropdown-button"
             data-title="${track.title}"
-            data-album="${track.album.title}"
-            data-artist="${track.artist.name}"
-            data-duration="0:30"
-            data-preview="${track.preview}"
-            data-cover="${track.album.cover_medium}">
+            data-album="${track.album?.title || 'Unknown Album'}"
+            data-artist="${track.artist?.name || 'Unknown Artist'}"
+            data-duration="${track.duration || 30}"
+            data-preview="${track.preview || ''}"
+            data-cover="${track.album?.cover_medium || '/images/album-placeholder.png'}"
+            data-deezer-id="${track.id || ''}">
             <i class="fas fa-ellipsis-v"></i>
           </button>
             <div class="track-dropdown-menu"></div>

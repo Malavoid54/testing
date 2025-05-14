@@ -72,3 +72,30 @@ volumeBtn.addEventListener('click', () => {
     }
 });
 
+function setupTrackPlayback(track) {
+  const audio = document.getElementById('mainAudioPlayer');
+  const nowPlayingImg = document.getElementById('nowPlayingImg');
+  const nowPlayingTitle = document.getElementById('nowPlayingTitle');
+  const nowPlayingArtist = document.getElementById('nowPlayingArtist');
+  
+  nowPlayingImg.src = track.albumCover || '/images/album-placeholder.png';
+  nowPlayingImg.onerror = () => {
+    nowPlayingImg.src = '/images/album-placeholder.png';
+  };
+  
+  nowPlayingTitle.textContent = track.title || 'Unknown Track';
+  nowPlayingArtist.textContent = track.artist || 'Unknown Artist';
+
+  if (track.previewUrl) {
+    audio.src = track.previewUrl;
+    audio.play().catch(e => {
+      console.error("Playback failed:", e);
+      alert("Could not play track preview");
+    });
+  } else {
+    audio.pause();
+    audio.src = "";
+    alert("No preview available for this track");
+  }
+}
+

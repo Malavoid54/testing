@@ -135,17 +135,18 @@ async function openPlaylist(playlistID, playlistName) {
 
     row.innerHTML = `
     <div class="song-number">${index + 1}</div>
-    <div class="song-info">
-      <img src="${coverUrl}" class="song-img" alt="${track.Title}" />
-      <div class="song-info-text">
-        <div class="title">${track.Title}</div>
-        <div class="artist">${track.Artist}</div>
+      <div class="song-info">
+        <img src="${coverUrl}" class="song-img" alt="${track.Title}" 
+          onerror="this.src='/images/album-placeholder.png'">
+        <div class="song-info-text">
+        <div class="title">${track.Title || 'Unknown Track'}</div>
+        <div class="artist">${track.Artist || 'Unknown Artist'}</div>
       </div>
     </div>
     <div class="song-date">${new Date(track.DateAdded).toLocaleDateString()}</div>
-    <div class="song-album">${track.Album}</div>
+    <div class="song-album">${track.Album || 'Unknown Album'}</div>
     <div class="song-duration">${durationText}</div>
-  `;
+    `;
 
     row.querySelector(".song-img").addEventListener("click", () => {
       if (previewUrl) {
