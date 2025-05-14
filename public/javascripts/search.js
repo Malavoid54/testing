@@ -172,21 +172,22 @@ document.addEventListener("click", async (event) => {
       : parseInt(button.dataset.duration, 10);
 
     const trackData = {
-      title: button.dataset.title,
-      album: button.dataset.album,
-      artist: button.dataset.artist,
-      duration: durationSeconds,
-      albumCover: button.dataset.cover,
-      previewUrl: button.dataset.preview
+      title: button.dataset.title || "Unknown Track",
+      album: button.dataset.album || "Unknown Album",
+      artist: button.dataset.artist || "Unknown Artist",
+      duration: durationSeconds || 30, 
+      albumCover: button.dataset.cover || "/images/album-placeholder.png", // Fallback image
+      previewUrl: button.dataset.preview || "", 
+      //deezerId: button.dataset.deezerId || "" 
     };
 
     // Initial menu with options
     menu.innerHTML = `
       <div class="dropdown-option" data-action="queue">▶ Add to Queue</div>
       <div class="dropdown-option" data-action="playlist">➕ Add to Playlist</div>
-      <div class="dropdown-option" data-action="album">💿 Open Album</div>
-      <div class="dropdown-option" data-action="artist">📃 View Artist</div>
+      ${trackData.previewUrl ? '<div class="dropdown-option" data-action="play">▶ Play Preview</div>' : ''}
     `;
+    
 
     // Event delegation for menu actions
     menu.querySelectorAll(".dropdown-option").forEach(option => {
@@ -194,44 +195,82 @@ document.addEventListener("click", async (event) => {
         const action = e.target.dataset.action;
 
         if (action === "playlist") {
-          const userInfo = JSON.parse(localStorage.getItem("loggedInUser"));
-          if (!userInfo || !userInfo.UserID) return;
+            const userInfo = JSON.parse(localStorage.getItem("loggedInUser"));
+            if (!userInfo || !userInfo.UserID) {
+              menu.innerHTML = '<div class="dropdown-option disabled">Please log in first</div>';
+              return;
+            }
 
           const res = await fetch(`/api/playlists/user/${userInfo.UserID}`);
           const playlists = await res.json();
 
+          if (playlists.length === 0) {
+            menu.innerHTML = '<div class="dropdown-option disabled">No playlists found</div>';
+            return;
+          }
+
           const playlistCheckboxes = playlists.map((pl) => `
             <div class="playlist-checkbox">
-              <label>${pl.Name}</label>
-              <input type="checkbox" data-id="${pl.PlaylistID}">
+            <label>${pl.Name}</label>
+            <input type="checkbox" data-id="${pl.PlaylistID}">
             </div>
-          `).join("");
+            `).join("");
 
           menu.innerHTML = `
-            <div class="dropdown-option disabled" style="padding: 6px 12px; opacity: 0.7;">Add to playlist:</div>
+            <div class="dropdown-option disabled">Add to playlist:</div>
             ${playlistCheckboxes}
+            <button class="dropdown-option save-btn" style="background: var(--primary); color: white;">Save</button>
           `;
 
+          
+          const selectedPlaylists = [];
+  
           menu.querySelectorAll("input[type='checkbox']").forEach((checkbox) => {
-            checkbox.addEventListener("change", async (e) => {
-              const playlistId = e.target.dataset.id;
-              const isChecked = e.target.checked;
-
-              const body = { playlistId, ...trackData };
-
-              const result = await fetch("/api/playlists/addTrack", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(body)
-              });
-
-              if (!result.ok) {
-                alert("Failed to add track.");
-                e.target.checked = !isChecked;
+            checkbox.addEventListener("change", (e) => {
+            const playlistId = e.target.dataset.id;
+            if (e.target.checked) {
+              selectedPlaylists.push(playlistId);
+            } else {
+              const index = selectedPlaylists.indexOf(playlistId);
+            if (index > -1) selectedPlaylists.splice(index, 1);
               }
             });
           });
-        }
+
+  
+          menu.querySelector(".save-btn").addEventListener("click", async () => {
+            if (selectedPlaylists.length === 0) {
+              alert("Please select at least one playlist");
+            return;
+          }
+
+          try {
+            for (const playlistId of selectedPlaylists) {
+              const response = await fetch("/api/playlists/addTrack", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  playlistId,
+                  title: trackData.title,
+                  album: trackData.album,
+                  artist: trackData.artist,
+                  duration: trackData.duration,
+                  albumCover: trackData.albumCover,
+                  previewUrl: trackData.previewUrl,
+                  deezerId: trackData.deezerId
+                })
+              });
+
+              if (!response.ok) throw new Error("Failed to save track");
+            }
+
+            menu.innerHTML = '<div class="dropdown-option disabled" style="color: green;">Saved successfully!</div>';
+            setTimeout(() => menu.classList.remove("active"), 1000);
+          } catch (error) {
+              menu.innerHTML = `<div class="dropdown-option disabled" style="color: red;">Error: ${error.message}</div>`;
+            }
+          });
+        }       
 
         // Handle other actions here:
         if (action === "queue") {
